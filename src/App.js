@@ -1,91 +1,107 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import data from './data.json';
+import Input from './components/Input'
+import Answer from './components/Answer';
 
 
 function App() {
-  // const [currencies, setCurrencies] = useState({});
+  const [currencies, setCurrencies] = useState({});
   const [currencyOne, setCurrencyOne] = useState('INR');
   const [currencyTwo, setCurrencyTwo] = useState('USD');
-  const [conversionResult, setConversionResult] = useState('');
+  const [valueOne, setValueOne] = useState(1)
+  const [valueTwo, setValueTwo] = useState(0)
 
-  // useEffect(()=>{
-  //   async function fetchExchangeRates(){
+ useEffect(()=>{
+   async function fetchExchangeRates(){
 
-  //     try{
+    try{
 
-  //       const response = await fetch("https://api.freecurrencyapi.com/v1/latest",{
-  //         method: 'GET',
-  //         mode: 'cors',
-  //         headers: {
-  //           apikey: 'fca_live_iqiqFpAQQ22mIlCxqTG5rCtY212ORdLtKkQMPnqo'
-  //         }
-  //       });
+      const response = await fetch("https://api.freecurrencyapi.com/v1/latest",{
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          apikey: 'fca_live_iqiqFpAQQ22mIlCxqTG5rCtY212ORdLtKkQMPnqo'
+        }
+      });
 
-  //       if(response.ok){
-  //         const data = await response.json();
-  //         console.log(data.data)
-  //         setCurrencies(data.data);
-  //       }else{
-  //         console.error("Error fetching currency data");
-  //       }
+      if(response.ok){
+       const data = await response.json();
+       setCurrencies(data.data);
+      }else{
+        console.error("Error fetching currency data");
+      }
 
-  //     }catch(error){
+      }catch(error){
 
-  //       console.error("Error fetching resources : ", error);
+       console.error("Error fetching resources : ", error);
 
-  //     }
-  //   }
-  //   fetchExchangeRates();
-  // },[])
+      }
+    }
+    fetchExchangeRates();
+  },[])
 
-  const convertCurrency = () =>{
-    const answer = data[currencyTwo]/data[currencyOne];
+  useEffect(()=>{
+    setValueTwo(calculateRate(valueOne, currencyOne, currencyTwo));
+  },[currencies])
 
-    setConversionResult(answer);
+  const calculateRate = (val, rate1, rate2)=>{
+    return (val*(currencies[rate2]/currencies[rate1])).toFixed(3);
   }
+
+  const handleInputChange = (val, index) => {
+    if(index === 0){
+      setValueOne(val);
+      setValueTwo(calculateRate(val, currencyOne, currencyTwo));
+    }else{
+      setValueTwo(val);
+      setValueOne(calculateRate(val, currencyTwo, currencyOne))
+    }
+  }
+
+  const handleSelectChange = (curr, index) =>{
+    if(index === 0){
+      setCurrencyOne(curr);
+      setValueTwo(calculateRate(valueOne, currencyOne, currencyTwo));
+    }else{
+      setCurrencyTwo(curr);
+      setValueOne(calculateRate(valueTwo, currencyTwo, currencyOne));
+    }
+  }
+  
 
   return (
 
     <div 
-      className="App w-1/2 h-1/2 flex flex-col justify-between items-center bg-white rounded-3xl">
+      className="App container w-2/5 h-3/4 flex flex-col justify-center items-center">
 
-      <h1 className='title text-center text-3xl'>Currency Converter</h1>
+      <h1 className='title text-center text-5xl text-white/75 mb-auto mt-24'>Currency Converter</h1>
 
-      <div className="inputContainer flex">
-        <form action="#">
-          <label htmlFor="currency-one">
-            <select 
-              name="currency" id="currency-one" value={currencyOne} onChange={(e)=>setCurrencyOne(e.target.value)}
-              className='w-40'>
-              {
-                Object.keys(data).map((currency)=>(
-                <option key={currency} value={currency}>
-                  {currency}
-                </option>
-              ))}
-            </select>
-          </label>
-        </form>
+      <Answer
+        val1={valueOne} 
+        val2={valueTwo}
+        curr1={currencyOne}
+        curr2={currencyTwo}
+      />
 
-        <form action="#">
-          <label htmlFor="currency-two">
-            <select 
-              name="currency" id="currency-two" value={currencyTwo} onChange={(e)=>setCurrencyTwo(e.target.value)}
-              className='w-40'>
-              {Object.keys(data).map((currency, index)=>(
-                <option key={index} value={currency}>
-                  {currency}
-                </option>
-              ))}
-            </select>
-          </label>
-        </form>
-      </div>
+      <Input 
+        index={0} 
+        options={currencies} 
+        handleValueChange={handleInputChange}
+        handleCurrencyChange={handleSelectChange}
+        value={valueOne}
+        currency={currencyOne} 
+      />
 
-      <input onClick={convertCurrency} type="submit" id='submit'/>
+      <Input 
+        index={1}
+        options={currencies} 
+        handleValueChange={handleInputChange} 
+        handleCurrencyChange={handleSelectChange}
+        value={valueTwo} 
+        currency={currencyTwo}
+      />
 
-      <h2 className='answer'>{conversionResult}</h2>
+      
 
     </div>
   );

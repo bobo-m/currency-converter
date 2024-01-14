@@ -8,6 +8,7 @@
     width: 100vw;
     display: flex;
     justify-content: center;
-    align-items: center;
-    background-color: rgb(168 85 247);
+    align-items: start;
+    background-color: black;
+    opacity: 85%;
 }
