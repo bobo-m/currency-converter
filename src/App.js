@@ -20,7 +20,7 @@ function App() {
         method: 'GET',
         mode: 'cors',
         headers: {
-          apikey: 'fca_live_iqiqFpAQQ22mIlCxqTG5rCtY212ORdLtKkQMPnqo'
+          apikey: "" // Replace with your apikey received on signup to the api
         }
       });
 
@@ -72,7 +72,7 @@ function App() {
   return (
 
     <div 
-      className="App container w-2/5 h-3/4 flex flex-col justify-center items-center">
+      className="App container md:w-2/5 w-4/5 h-3/4 flex flex-col justify-center items-center">
 
       <h1 className='title text-center text-5xl text-white/75 mb-auto mt-24'>Currency Converter</h1>
 
